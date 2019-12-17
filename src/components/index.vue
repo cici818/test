@@ -42,9 +42,21 @@
           <div class="left-705">
             <div class="banner-img">
               <div id="focus-box" class="focus-box">
-                <ul class="slides">
+                <!-- <ul class="slides"> -->
+
+<!-- div生成 -->
+                  <el-carousel height="341px">
+                    <el-carousel-item v-for="(item,index) in sliderlist" :key="index">
+                      <a href="/goods.html">
+                      <img style="width: 100%;height:100%;" :src="item.img_url" draggable="false" />
+                    </a>
+                    </el-carousel-item>
+                  </el-carousel>
+
+
+
                   <!-- sliderlist -->
-                  <li
+                  <!-- <li
                     v-for="(item,index) in sliderlist"
                     :key="index"
                     class
@@ -53,8 +65,8 @@
                     <a href="/goods.html">
                       <img style="width: 100%;height:100%;" :src="item.img_url" draggable="false" />
                     </a>
-                  </li>
-                </ul>
+                  </li> -->
+                <!-- </ul> -->
                 <ol class="flex-control-nav flex-control-paging">
                   <li>
                     <a class>1</a>
@@ -76,7 +88,8 @@
                   <img :src="item.img_url" />
                 </div>
                 <div class="txt-box">
-                  <a href="/goods/show-98.html">{{item.title}}</a>
+                  <router-link :to="'/goodsinfo/'+item.category_id" >{{item.title}}</router-link>
+                 
                   <span>{{item.add_time}}</span>
                 </div>
               </li>
@@ -85,11 +98,15 @@
         </div>
       </div>
     </div>
-    <div class="section" v-for="(item,index) in chanpinfenlei" :key="index" >
+    <div class="section" v-for="(item,index) in chanpinfenlei" :key="index">
       <div class="main-tit">
         <h2>{{item.catetitle}}</h2>
         <p>
-          <a v-for="(it,en) in item.level2catelist" :key="en" href="/goods/43.html">{{it.subcatetitle}}</a>
+          <a
+            v-for="(it,en) in item.level2catelist"
+            :key="en"
+            href="/goods/43.html"
+          >{{it.subcatetitle}}</a>
           <!-- <a href="/goods/43.html">摄影摄像</a> -->
           <a href="/goods/40.html">
             更多
@@ -100,14 +117,10 @@
       <div class="wrapper clearfix">
         <div class="wrap-box">
           <ul class="img-list">
-
-
-            <li v-for="(it,i) in item.datas" :key="i" >
-              <router-link :to="'/goodsinfo/'+it.artID" class >
+            <li v-for="(it,i) in item.datas" :key="i">
+              <router-link :to="'/goodsinfo/'+it.artID" class>
                 <div class="img-box">
-                  <img
-                    :src="it.img_url"
-                  />
+                  <img :src="it.img_url" />
                 </div>
                 <div class="info">
                   <h3>{{it.artTitle}}</h3>
@@ -122,25 +135,16 @@
                     </span>
                   </p>
                 </div>
-             </router-link>
+              </router-link>
             </li>
-           
           </ul>
         </div>
       </div>
     </div>
-   
   </div>
 </template>
 
 <script>
-
-
-
-
-
-
-
 import axios from "axios";
 export default {
   data() {
@@ -148,7 +152,7 @@ export default {
       catelist: [],
       sliderlist: [],
       toplist: [],
-      chanpinfenlei:[]
+      chanpinfenlei: []
     };
   },
   created() {
@@ -159,18 +163,17 @@ export default {
         this.catelist = data.data.message.catelist;
         this.sliderlist = data.data.message.sliderlist;
         this.toplist = data.data.message.toplist;
-        window.console.log(data);
+        window.console.log(this.toplist);
       });
 
-      // 商品首页按照分类分组获取数据
-      axios.get("http://134.175.59.248:8899/site/goods/getgoodsgroup").then(data=>{
+    // 商品首页按照分类分组获取数据
+    axios
+      .get("http://134.175.59.248:8899/site/goods/getgoodsgroup")
+      .then(data => {
         window.console.log(data);
-        this.chanpinfenlei=data.data.message
-        
-      })
+        this.chanpinfenlei = data.data.message;
+      });
   },
-  methods: {
-  
-  },
+  methods: {}
 };
 </script>

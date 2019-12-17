@@ -42,35 +42,16 @@
                     <dt>购买数量</dt>
                     <dd>
                       <div class="stock-box">
-                        <div class="el-input-number el-input-number--small">
-                          <span role="button" class="el-input-number__decrease is-disabled">
-                            <i class="el-icon-minus"></i>
-                          </span>
-                          <span role="button" class="el-input-number__increase">
-                            <i class="el-icon-plus"></i>
-                          </span>
-                          <div class="el-input el-input--small">
-                            <!---->
-                            <input
-                              autocomplete="off"
-                              size="small"
-                              type="text"
-                              rows="2"
-                              max="60"
-                              min="1"
-                              validateevent="true"
-                              class="el-input__inner"
-                              role="spinbutton"
-                              aria-valuemax="60"
-                              aria-valuemin="1"
-                              aria-valuenow="1"
-                              aria-disabled="false"
-                            />
-                            <!---->
-                            <!---->
-                            <!---->
-                          </div>
-                        </div>
+                        <!-- <div class="el-input el-input--small">  -->
+                        <!-- element,计数器 -->
+                        <el-input-number
+                          v-model="num"
+                          :min="1"
+                          :max="10"
+                          label="描述文字"
+                        ></el-input-number>
+
+                        <!-- </div> -->
                       </div>
                       <span class="stock-txt">
                         库存
@@ -134,6 +115,7 @@
                           sucmsg=" "
                           data-type="*10-1000"
                           nullmsg="请填写评论内容！"
+                          v-model.trim="txtContent"
                         ></textarea>
                         <span class="Validform_checktip"></span>
                       </div>
@@ -144,6 +126,7 @@
                           type="submit"
                           value="提交评论"
                           class="submit"
+                          @click="getcontent"
                         />
                         <span class="Validform_checktip"></span>
                       </div>
@@ -179,11 +162,20 @@
                     </li>-->
                   </ul>
                   <div class="page-box" style="margin: 5px 0px 0px 62px;">
-                    <div id="pagination" class="digg">
+                    <el-pagination
+                     @size-change="handleSizeChange"
+                      @current-change="handleCurrentChange"
+                      :current-page.sync="currentPage"
+                      :page-sizes="[10, 20, 30, 40]"
+                      :page-size="10"
+                      layout="sizes, prev, pager, next"
+                      :total="150"
+                    ></el-pagination>
+                    <!-- <div id="pagination" class="digg">
                       <span class="disabled">« 上一页</span>
                       <span class="current">1</span>
                       <span class="disabled">下一页 »</span>
-                    </div>
+                    </div>-->
                   </div>
                 </div>
               </div>
@@ -217,6 +209,7 @@
 
 <script>
 import axios from "axios";
+
 export default {
   name: "goodsinfo",
   data() {
@@ -224,13 +217,16 @@ export default {
       goodsinfo: {},
       hotgoodslist: [],
       imglist: [],
-      selected: "shangpinxiangqing"
+      selected: "shangpinxiangqing",
+      num: 1,
+      txtContent: "",
+      currentPage: 2,
+       
     };
   },
+
   created() {
     this.getInfo();
-    window.console.log('creative');
-    
   },
   watch: {
     "$route.params.id"() {
@@ -245,12 +241,40 @@ export default {
           `http://134.175.59.248:8899/site/goods/getgoodsinfo/${this.$route.params.id}`
         )
         .then(data => {
-          window.console.log(data);
           this.goodsinfo = data.data.message.goodsinfo;
           this.hotgoodslist = data.data.message.hotgoodslist;
           this.imglist = data.data.message.imglist;
+          this.num = 1;
         });
-    }
+    },
+    getcontent() {
+      // 获取评论
+      if (this.txtContent.length !== 0) {
+        axios
+          .post(
+            `http://134.175.59.248:8899/site/validate/comment/post/goods/${this.$route.params.id}`,
+            { commenttxt: this.txtContent }
+          )
+          .then(data => {
+            this.$message({
+              message: "恭喜你，发表成功",
+              type: "success"
+            });
+            window.console.log(data);
+          });
+      } else {
+        this.$message.error("内容有敏感字,请重新评论");
+      }
+    },
+ 
+    handleSizeChange(val) {
+       window.console.log(`每页 ${val} 条`);
+      },
+   handleCurrentChange(val) {
+     axios.get
+        window.console.log(`当前页: ${val}`);
+      }
+
   }
 };
 </script>
